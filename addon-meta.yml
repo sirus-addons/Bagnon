@@ -1,4 +1,4 @@
 name: Bagnon
 description: README.md
-version: 1
+version: 2
 directories: ["Bagnon", "Bagnon_Config", "Bagnon_Forever", "Bagnon_GuildBank", "Bagnon_Tooltips"]
