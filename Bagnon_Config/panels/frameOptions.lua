@@ -186,9 +186,12 @@ function FrameOptions:AddWidgets()
 
 	local reverseSlotOrdering = self:CreateReverseSlotOrderCheckbox()
 	reverseSlotOrdering:SetPoint('TOPLEFT', toggleOptionsFrame, 'BOTTOMLEFT', 0, -CHECK_BUTTON_SPACING)
+
+	local reverseItemSlotOrdering = self:CreateReverseItemSlotOrderCheckbox()
+	reverseItemSlotOrdering:SetPoint('TOPLEFT', reverseSlotOrdering, 'BOTTOMLEFT', 0, -CHECK_BUTTON_SPACING)
 	
 	local bagBreak = self:CreateBagBreakCheckbox()
-	bagBreak:SetPoint('TOPLEFT', reverseSlotOrdering, 'BOTTOMLEFT', 0, -CHECK_BUTTON_SPACING)
+	bagBreak:SetPoint('TOPLEFT', reverseItemSlotOrdering, 'BOTTOMLEFT', 0, -CHECK_BUTTON_SPACING)
 
 
 	--[[ Color Selectors ]]--
@@ -585,6 +588,27 @@ end
 
 function FrameOptions:GetReverseSlotOrderCheckbox()
 	return self.reverseSlotOrderCheckbox
+end
+
+
+--reverse bagslot ordering
+function FrameOptions:CreateReverseItemSlotOrderCheckbox()
+	local button = Bagnon.OptionsCheckButton:New(L.ReverseSlots, self)
+
+	button.OnEnableSetting = function(self, enable)
+		self:GetParent():GetSettings():SetReverseItemSlotOrder(enable)
+	end
+
+	button.IsSettingEnabled = function(self)
+		return self:GetParent():GetSettings():IsItemSlotOrderReversed()
+	end
+
+	self.reverseItemSlotOrderCheckbox = button
+	return button
+end
+
+function FrameOptions:GetReverseItemSlotOrderCheckbox()
+	return self.reverseItemSlotOrderCheckbox
 end
 
 --bag break layout

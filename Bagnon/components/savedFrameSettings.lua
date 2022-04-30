@@ -367,6 +367,14 @@ function SavedFrameSettings:IsSlotOrderReversed()
 	return self:GetDB().reverseSlotOrder
 end
 
+function SavedFrameSettings:SetReverseItemSlotOrder(enable)
+	self:GetDB().reverseItemSlotOrder = enable
+end
+
+function SavedFrameSettings:IsItemSlotOrderReversed()
+	return self:GetDB().reverseItemSlotOrder
+end
+
 
 --[[ Databroker Display Object ]]--
 
@@ -441,6 +449,7 @@ function SavedFrameSettings:GetDefaultInventorySettings()
 		
 		--slot ordering
 		reverseSlotOrder = false,
+		reverseItemSlotOrderCheckbox = false,
 	}
 
 	SavedFrameSettings.invDefaults = defaults
@@ -491,6 +500,7 @@ function SavedFrameSettings:GetDefaultBankSettings()
 		
 		--slot ordering
 		reverseSlotOrder = false,
+		reverseItemSlotOrderCheckbox = false,
 	}
 	SavedFrameSettings.bankDefaults = defaults
 	return defaults
@@ -533,6 +543,7 @@ function SavedFrameSettings:GetDefaultKeyRingSettings()
 		
 		--slot ordering
 		reverseSlotOrder = false,
+		reverseItemSlotOrderCheckbox = false,
 	}
 	SavedFrameSettings.keyDefaults = defaults
 	return defaults

@@ -359,9 +359,11 @@ function ItemFrame:Layout_Default()
 	local spacing = self:GetSpacing()
 	local effItemSize = self.ITEM_SIZE + spacing
 
+	local reverseSlots = self:GetSettings():GetDB():IsItemSlotOrderReversed()
+
 	local i = 0
 	for _, bag in self:GetVisibleBags() do
-		for slot = 1, self:GetBagSize(bag) do
+		for slot = reverseSlots and self:GetBagSize(bag) or 1, reverseSlots and 1 or self:GetBagSize(bag), reverseSlots and -1 or 1 do
 			local itemSlot = self:GetItemSlot(bag, slot)
 			if itemSlot then
 				i = i + 1
@@ -391,9 +393,11 @@ function ItemFrame:Layout_BagBreak()
 	local col = 1
 	local maxCols = 0
 
+	local reverseSlots = self:GetSettings():GetDB():IsItemSlotOrderReversed()
+
 	for _, bag in self:GetVisibleBags() do
 		local bagSize = self:GetBagSize(bag)
-		for slot = 1, bagSize do
+		for slot = reverseSlots and self:GetBagSize(bag) or 1, reverseSlots and 1 or self:GetBagSize(bag), reverseSlots and -1 or 1 do
 			local itemSlot = self:GetItemSlot(bag, slot)
 
 			itemSlot:ClearAllPoints()

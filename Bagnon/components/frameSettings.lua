@@ -454,6 +454,19 @@ function FrameSettings:IsSlotOrderReversed()
 end
 
 
+function FrameSettings:SetReverseItemSlotOrder(enable)
+	local enable = enable and true or false
+	if self:IsItemSlotOrderReversed() ~= enable then
+		self:GetDB():SetReverseItemSlotOrder(enable)
+		self:SendMessage('SLOT_ORDER_UPDATE', self:IsItemSlotOrderReversed())
+	end
+end
+
+function FrameSettings:IsItemSlotOrderReversed()
+	return self:GetDB():IsItemSlotOrderReversed()
+end
+
+
 --[[ Text Filtering ]]--
 
 function FrameSettings:EnableTextSearch()
