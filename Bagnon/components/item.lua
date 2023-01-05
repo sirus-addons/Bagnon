@@ -299,34 +299,44 @@ function ItemSlot:UpdateSlotColor()
 		if self:IsKeyRingSlot() then
 			local r, g, b = self:GetKeyringSlotColor()
 			SetItemButtonTextureVertexColor(self, r, g, b)
-			self:GetNormalTexture():SetVertexColor(r, g, b)
+			if self:GetNormalTexture() then
+				self:GetNormalTexture():SetVertexColor(r, g, b)
+			end
 			return
 		end
 
 		if self:IsAmmoBagSlot() then
 			local r, g, b = self:GetAmmoSlotColor()
 			SetItemButtonTextureVertexColor(self, r, g, b)
-			self:GetNormalTexture():SetVertexColor(r, g, b)
+			if self:GetNormalTexture() then
+				self:GetNormalTexture():SetVertexColor(r, g, b)
+			end
 			return
 		end
 
 		if self:IsTradeBagSlot() then
 			local r, g, b = self:GetTradeSlotColor()
 			SetItemButtonTextureVertexColor(self, r, g, b)
-			self:GetNormalTexture():SetVertexColor(r, g, b)
+			if self:GetNormalTexture() then
+				self:GetNormalTexture():SetVertexColor(r, g, b)
+			end
 			return
 		end
 
 		if self:IsShardBagSlot() then
 			local r, g, b = self:GetShardSlotColor()
 			SetItemButtonTextureVertexColor(self, r, g, b)
-			self:GetNormalTexture():SetVertexColor(r, g, b)
+			if self:GetNormalTexture() then
+				self:GetNormalTexture():SetVertexColor(r, g, b)
+			end
 			return
 		end
 	end
 
 	SetItemButtonTextureVertexColor(self, 1, 1, 1)
-	self:GetNormalTexture():SetVertexColor(1, 1, 1)
+	if self:GetNormalTexture() then
+		self:GetNormalTexture():SetVertexColor(1, 1, 1)
+	end
 end
 
 --item count
