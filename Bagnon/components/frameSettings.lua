@@ -186,7 +186,7 @@ end
 --returns a list of all possible frame layers
 function FrameSettings:GetAvailableLayers()
 	if not FrameSettings.availableFrameLayers then
-		FrameSettings.availableFrameLayers = {'LOW', 'MEDIUMLOW', 'MEDIUM', 'MEDIUMHIGH', 'HIGH', 'TOPLEVEL'}
+		FrameSettings.availableFrameLayers = {'LOW', 'MEDIUMLOW', 'MEDIUM', 'MEDIUMHIGH', 'HIGH', 'DIALOG', 'FULLSCREEN', 'FULLSCREEN_DIALOG', 'TOOLTIP', 'TOPLEVEL'}
 	end
 	return FrameSettings.availableFrameLayers
 end
