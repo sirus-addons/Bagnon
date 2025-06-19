@@ -438,6 +438,9 @@ function Frame:Layout()
 	width = width + w + 24 --append spacing between close button and this
 	height = height + 20
 
+	local w, h = self:PlaceItemExpirationToggle()
+	width = width + w + 24 --append spacing between close button and this
+
 	local w, h = self:PlaceTitleFrame()
 	width = width + w
 
@@ -576,7 +579,9 @@ function Frame:PlaceSearchFrame()
 		frame:SetPoint('TOPLEFT', self, 'TOPLEFT', 8, -8)
 	end
 
-	if self:HasOptionsToggle() then
+	if self:HasItemExpirationToggle() then
+		frame:SetPoint('RIGHT', self:GetItemExpirationToggle(), 'LEFT', -2, 0)
+	elseif self:HasOptionsToggle() then
 		frame:SetPoint('RIGHT', self:GetOptionsToggle(), 'LEFT', -2, 0)
 	else
 		frame:SetPoint('RIGHT', self:GetCloseButton(), 'LEFT', -2, 0)
@@ -702,7 +707,9 @@ function Frame:PlaceTitleFrame()
 		h = 20
 	end
 
-	if self:HasOptionsToggle() then
+	if self:HasItemExpirationToggle() then
+		frame:SetPoint('RIGHT', self:GetItemExpirationToggle(), 'LEFT', -4, 0)
+	elseif self:HasOptionsToggle() then
 		frame:SetPoint('RIGHT', self:GetOptionsToggle(), 'LEFT', -4, 0)
 	else
 		frame:SetPoint('RIGHT', self:GetCloseButton(), 'LEFT', -4, 0)
@@ -868,6 +875,48 @@ end
 function Frame:HasOptionsToggle()
 	local name, title, notes, enabled = GetAddOnInfo('Bagnon_Config')
 	return enabled and self:GetSettings():HasOptionsToggle()
+end
+
+
+--[[ item expiration toggle ]]--
+
+function Frame:GetItemExpirationToggle()
+	return self.itemExpiration
+end
+
+function Frame:CreateItemExpirationToggle()
+	local f, frame = Bagnon.ItemExpiration:New(self:GetFrameID(), self)
+	self.itemExpiration = f
+	self.itemExpirationFrame = frame
+	return f
+end
+
+function Frame:PlaceItemExpirationToggle()
+	if self:HasItemExpirationToggle() then
+		local toggle = self:GetItemExpirationToggle() or self:CreateItemExpirationToggle()
+		toggle:ClearAllPoints()
+		if self:HasOptionsToggle() then
+			toggle:SetPoint('TOPRIGHT', self:GetOptionsToggle(), 'TOPLEFT', -4, 0)
+		else
+			toggle:SetPoint('TOPRIGHT', self, 'TOPRIGHT', -32, -8)
+		end
+		toggle:Show()
+
+		return toggle:GetWidth(), toggle:GetHeight()
+	end
+
+	local toggle = self:GetItemExpirationToggle()
+	if toggle then
+		toggle:Hide()
+	end
+	return 0, 0
+end
+
+function Frame:HasItemExpirationToggle()
+	if _G["ContainerItemExpirationFrame"] and type(C_ItemExpiration) == "table" then
+		return true
+	end
+	return false
 end
 
 
