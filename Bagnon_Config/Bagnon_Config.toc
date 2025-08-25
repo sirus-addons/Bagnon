@@ -1,6 +1,6 @@
 ## Interface: 30300
 ## Title: Bagnon Config
-## Notes: |@Version: 5@|GUI based configuration for Bagnon
+## Notes: |@Version: 6@|GUI based configuration for Bagnon
 ## Author: Tuller
 ## Dependencies: Bagnon
 ## LoadOnDemand: 1

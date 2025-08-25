@@ -169,7 +169,7 @@ local function search_IsInText(search, ...)
 	for i = 1, select('#', ...) do
 		local text = select(i, ...)
 		text = text and tostring(text):lower()
-		if text and (text == search or text:match(search)) then
+		if text and (text == search or text:find(search, 1, true)) then
 			return true
 		end
 	end

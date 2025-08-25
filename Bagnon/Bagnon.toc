@@ -1,7 +1,7 @@
 ## Interface: 30300
 ## Title: Bagnon
 ## Author: Tuller
-## Notes: |@Version: 5@|Single window displays for your inventory, bank, and keys
+## Notes: |@Version: 6@|Single window displays for your inventory, bank, and keys
 ## SavedVariables: BagnonGlobalSettings
 ## SavedVariablesPerCharacter: BagnonFrameSettings
 ## Version: 2.13.3
