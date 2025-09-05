@@ -69,6 +69,8 @@ function Frame:UpdateEvents()
 		self:RegisterMessage('DATABROKER_FRAME_ENABLE_UPDATE')
 		self:RegisterMessage('SEARCH_TOGGLE_ENABLE_UPDATE')
 		self:RegisterMessage('OPTIONS_TOGGLE_ENABLE_UPDATE')
+
+		self:RegisterMessage('CONTAINER_ITEM_EXPIRATION_UPDATE')
 	end
 end
 
@@ -178,6 +180,15 @@ end
 function Frame:OPTIONS_TOGGLE_ENABLE_UPDATE(msg, frameID, enable)
 	if self:GetFrameID() == frameID then
 		self:Layout()
+	end
+end
+
+function Frame:CONTAINER_ITEM_EXPIRATION_UPDATE(msg, frameID)
+	if self:GetFrameID() == frameID then
+		local shouldShow = C_ItemExpiration.GetNumExpirationItems() > 0
+		if shouldShow ~= self:IsItemExpirationShown() then
+			self:Layout()
+		end
 	end
 end
 
@@ -892,6 +903,10 @@ function Frame:CreateItemExpirationToggle()
 end
 
 function Frame:PlaceItemExpirationToggle()
+	if self:GetFrameID() ~= "inventory" then
+		return 0, 0
+	end
+
 	if self:HasItemExpirationToggle() then
 		local toggle = self:GetItemExpirationToggle() or self:CreateItemExpirationToggle()
 		toggle:ClearAllPoints()
@@ -913,7 +928,15 @@ function Frame:PlaceItemExpirationToggle()
 end
 
 function Frame:HasItemExpirationToggle()
-	if _G["ContainerItemExpirationFrame"] and type(C_ItemExpiration) == "table" then
+	if self:GetFrameID() == "inventory" and _G["ContainerItemExpirationFrame"] and type(C_ItemExpiration) == "table" and C_ItemExpiration.GetNumExpirationItems() > 0 then
+		return true
+	end
+	return false
+end
+
+function Frame:IsItemExpirationShown()
+	local frame = self:GetItemExpirationToggle()
+	if frame and frame:IsShown() then
 		return true
 	end
 	return false

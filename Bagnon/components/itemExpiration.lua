@@ -9,6 +9,12 @@ local NORMAL_TEXTURE_SIZE = 64 * (SIZE/36)
 
 local HOOK = false
 
+if EventRegistry then
+	EventRegistry:RegisterFrameEventAndCallback("CONTAINER_ITEM_EXPIRATION_UPDATE", function(owner, ...)
+		Bagnon.Callbacks:SendMessage("CONTAINER_ITEM_EXPIRATION_UPDATE", "inventory")
+	end, "Bagnon_ItemExpiration")
+end
+
 --[[ Constructor ]]--
 
 function ItemExpiration:New(frameID, parent)
