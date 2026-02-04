@@ -219,6 +219,16 @@ function Bagnon:HookBagClickEvents()
 			oOpenAllBags(force)
 		end
 	end
+	
+	local openBag = OpenBag
+	OpenBag = function(bagSlot)
+		local frameID = self.BagSlotInfo:IsBankBag(bagSlot) and 'bank' or 'inventory'
+		local opened = self:FrameControlsBag(frameID, bagSlot) and self:ShowFrame(frameID)
+
+		if not opened then
+			openBag(bagSlot)
+		end
+	end
 end
 
 
