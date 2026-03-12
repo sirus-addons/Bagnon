@@ -10,16 +10,14 @@ Frame:Hide()
 Bagnon.Frame = Frame
 
 
---[[
-	Constructor
---]]
+--[[ Constructor ]]--
 
 function Frame:New(frameID)
 	local f = self:Bind(CreateFrame('Frame', 'BagnonFrame' .. frameID, UIParent))
-	f:Hide()
 	f:SetClampedToScreen(true)
 	f:SetMovable(true)
 	f:EnableMouse(true)
+	f:Hide()
 
 	f:SetBackdrop{
 	  bgFile = [[Interface\ChatFrame\ChatFrameBackground]],
@@ -35,19 +33,15 @@ function Frame:New(frameID)
 	f:Rescale()
 	f:UpdateEverything()
 
-	table.insert(UISpecialFrames, f:GetName())
-
+	tinsert(UISpecialFrames, f:GetName())
 	return f
 end
 
 
---[[
-	Frame Messages
---]]
+--[[ Frame Messages ]]--
 
 function Frame:UpdateEvents()
 	self:UnregisterAllMessages()
-
 	self:RegisterMessage('FRAME_SHOW')
 
 	if self:IsVisible() then
@@ -497,17 +491,24 @@ function Frame:PlaceMenuButtons()
 
 	if self:HasPlayerSelector() then
 		local selector = self:GetPlayerSelector() or self:CreatePlayerSelector()
-		table.insert(menuButtons, selector)
+		tinsert(menuButtons, selector)
 	end
 
 	if self:HasBagFrame() and self:HasBagToggle() then
 		local toggle = self:GetBagToggle() or self:CreateBagToggle()
-		table.insert(menuButtons, toggle)
+		tinsert(menuButtons, toggle)
+	end
+	
+	-- guild bank support
+	if self:HasLogs() then
+		for i, toggle in ipairs(self:GetLogToggles()) do
+			tinsert(menuButtons, toggle)
+		end
 	end
 
 	if self:HasSearchToggle() then
 		local toggle = self:GetSearchToggle() or self:CreateSearchToggle()
-		table.insert(menuButtons, toggle)
+		tinsert(menuButtons, toggle)
 	end
 
 	for i, button in ipairs(menuButtons) do
@@ -533,11 +534,6 @@ function Frame:GetMenuButtons()
 	end
 	return self.menuButtons
 end
-
-
---[[
-	Frame Components
---]]
 
 
 --[[ close button ]]--
@@ -888,6 +884,9 @@ function Frame:HasOptionsToggle()
 	return enabled and self:GetSettings():HasOptionsToggle()
 end
 
+function Frame:HasLogs()
+	return nil
+end
 
 --[[ item expiration toggle ]]--
 

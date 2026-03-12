@@ -11,7 +11,7 @@ Bagnon.GuildMoneyFrame = MoneyFrame
 
 --[[ Things! ]]--
 
-local L = LibStub('AceLocale-3.0'):GetLocale('Bagnon')
+local L = LibStub('AceLocale-3.0'):GetLocale('Bagnon-GuildBank')
 local GOLD_TEXT = string.format('|cffffd700%s|r', 'g')
 local SILVER_TEXT = string.format('|cffc7c7cf%s|r', 's')
 local COPPER_TEXT = string.format('|cffeda55f%s|r', 'c')
@@ -135,21 +135,22 @@ end
 
 function MoneyFrame:UpdateEvents()
 	self:UnregisterAllEvents()
+	
 	if self:IsVisible() then
 		self:RegisterEvent('GUILDBANK_UPDATE_MONEY')
 	end
 end
 
 function MoneyFrame:UpdateTooltip()
-	GameTooltip:SetText('Guild Funds')
-	GameTooltip:AddLine('<Left Click> to deposit.', 1, 1, 1)
+	GameTooltip:SetText(L.TipFunds)
+	GameTooltip:AddLine(L.TipDeposit, 1, 1, 1)
 
 	if CanWithdrawGuildBankMoney() then
 		local withdrawMoney = GetGuildBankWithdrawMoney()
 		if withdrawMoney > 0 then
-			GameTooltip:AddLine(string.format('<Right Click> to withdraw (%s remaining).', self:GetCurrencyText(withdrawMoney)), 1, 1, 1)
+			GameTooltip:AddLine(format(L.TipWithdrawRemaining, self:GetCoinsText(withdrawMoney)), 1, 1, 1)
 		else
-			GameTooltip:AddLine('<Right Click> to withdraw.')
+			GameTooltip:AddLine(L.TipWithdraw)
 		end
 	end
 
@@ -173,11 +174,13 @@ function MoneyFrame:ShowDepositDialog()
 end
 
 function MoneyFrame:ShowWithdrawDialog()
-	if not CanWithdrawGuildBankMoney() then return end
+	if not CanWithdrawGuildBankMoney() then
+		return
+	end
 
 	PlaySound('igMainMenuOption')
-
 	StaticPopup_Hide('GUILDBANK_DEPOSIT')
+	
 	if StaticPopup_Visible('GUILDBANK_WITHDRAW') then
 		StaticPopup_Hide('GUILDBANK_WITHDRAW')
 	else
@@ -186,7 +189,7 @@ function MoneyFrame:ShowWithdrawDialog()
 end
 
 
---[[ Frame Properties ]]--
+--[[ Properties ]]--
 
 function MoneyFrame:GetSettings()
 	return Bagnon.FrameSettings:Get(self:GetFrameID())
