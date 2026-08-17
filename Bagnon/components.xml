@@ -15,6 +15,7 @@
 	<Script file="components\searchToggle.lua"/>
 	<Script file="components\settings.lua"/>
 	<Script file="components\titleFrame.lua"/>
+	<Script file="components\sortButton.lua"/>
 	<Script file="components\savedFrameSettings.lua"/>
 	<Script file="components\itemExpiration.lua"/>
 </Ui>

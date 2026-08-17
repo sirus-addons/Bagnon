@@ -132,7 +132,7 @@ end
 function SavedFrameSettings:UpgradeDB()
 	local major, minor, bugfix = self:GetDBVersion():match('(%w+)%.(%w+)%.(%w+)')
 	local db = self:GetGlobalDB()
-	
+
 	--hidden bags upgrade
 	for frameID, settings in pairs(db.frames) do
 		local hiddenBags = settings.hiddenBags
@@ -166,7 +166,7 @@ function SavedFrameSettings:ClearDefaults()
 
 	for frameID, settings in pairs(db.frames) do
 		removeDefaults(settings, self:GetDefaultSettings(frameID))
-		
+
 		if next(settings) == nil then
 			db[frameID] = nil
 		end
@@ -291,6 +291,14 @@ function SavedFrameSettings:HasSearchToggle()
 	return self:GetDB().hasSearchToggle
 end
 
+function SavedFrameSettings:SetSortEnabled(enable)
+	self:GetDB().hasSortButton = enable or false
+end
+
+function SavedFrameSettings:HasSortButton()
+	return self:GetDB().hasSortButton
+end
+
 function SavedFrameSettings:SetHasOptionsToggle(enable)
 	self:GetDB().hasOptionsToggle = enable or false
 end
@@ -411,8 +419,8 @@ function SavedFrameSettings:GetDefaultInventorySettings()
 	local defaults = SavedFrameSettings.invDefaults or {
 		--bag settings
 		availableBags = {BACKPACK_CONTAINER, 1, 2, 3, 4, KEYRING_CONTAINER},
-	
-		hiddenBags = {			
+
+		hiddenBags = {
 			[BACKPACK_CONTAINER] = false,
 			[1] = false,
 			[2] = false,
@@ -443,10 +451,11 @@ function SavedFrameSettings:GetDefaultInventorySettings()
 		hasSearchToggle = true,
 		hasOptionsToggle = true,
 		hasKeyringToggle = true,
+		hasSortButton = false,
 
 		--dbo display object
 		dataBrokerObject = 'BagnonLauncher',
-		
+
 		--slot ordering
 		reverseSlotOrder = false,
 		reverseItemSlotOrderCheckbox = false,
@@ -460,9 +469,10 @@ end
 function SavedFrameSettings:GetDefaultBankSettings()
 	local defaults = SavedFrameSettings.bankDefaults or {
 		--bag settings
-		availableBags = {BANK_CONTAINER, 5, 6, 7, 8, 9, 10, 11},
+		availableBags = {BANK_CONTAINER, 5, 6, 7, 8, 9, 10, 11, REAGENTBANK_CONTAINER},
 		hiddenBags = {
 			[BANK_CONTAINER] = false,
+			[REAGENTBANK_CONTAINER] = false,
 			[5] = false,
 			[6] = false,
 			[7] = false,
@@ -483,7 +493,7 @@ function SavedFrameSettings:GetDefaultBankSettings()
 		frameLayer = 'HIGH',
 
 		--itemFrame
-		itemFrameColumns = 10,
+		itemFrameColumns = 16,
 		itemFrameSpacing = 2,
 		bagBreak = false,
 
@@ -494,10 +504,11 @@ function SavedFrameSettings:GetDefaultBankSettings()
 		hasSearchToggle = true,
 		hasOptionsToggle = true,
 		hasKeyringToggle = false,
+		hasSortButton = true,
 
 		--dbo display object
 		dataBrokerObject = 'BagnonLauncher',
-		
+
 		--slot ordering
 		reverseSlotOrder = false,
 		reverseItemSlotOrderCheckbox = false,
@@ -540,7 +551,7 @@ function SavedFrameSettings:GetDefaultKeyRingSettings()
 
 		--dbo display object
 		dataBrokerObject = 'BagnonLauncher',
-		
+
 		--slot ordering
 		reverseSlotOrder = false,
 		reverseItemSlotOrderCheckbox = false,

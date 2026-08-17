@@ -20,6 +20,10 @@ function BagSlotInfo:IsBank(bagSlot)
 	return bagSlot == BANK_CONTAINER
 end
 
+function BagSlotInfo:IsReagents(slot)
+	return slot == REAGENTBANK_CONTAINER
+end
+
 --returns true if the given bagSlot is the backpack
 function BagSlotInfo:IsBackpack(bagSlot)
 	return bagSlot == BACKPACK_CONTAINER
@@ -117,18 +121,22 @@ function BagSlotInfo:GetBagType(player, bagSlot)
 	if self:IsBank(bagSlot) or self:IsBackpack(bagSlot) then
 		return 0
 	end
-	
+
+	if self:IsReagents(bagSlot) then
+		return -1
+	end
+
 	local itemLink = (self:GetItemInfo(player, bagSlot))
 	if itemLink then
 		return GetItemFamily(itemLink)
 	end
-	
+
 	return 0
 end
 
 -- Stolen from OneBag, since my bitflag knowledge could be better
 -- BAGTYPE_QUIVER = Quiver + Ammo
-local BAGTYPE_QUIVER = 0x0001 + 0x0002 
+local BAGTYPE_QUIVER = 0x0001 + 0x0002
 
 function BagSlotInfo:IsAmmoBag(player, bagSlot)
 	return bit.band(self:GetBagType(player, bagSlot), BAGTYPE_QUIVER) > 0
@@ -142,7 +150,7 @@ function BagSlotInfo:IsShardBag(player, bagSlot)
 end
 
 -- BAGTYPE_PROFESSION = Leather + Inscription + Herb + Enchanting + Engineering + Gem + Mining
-local BAGTYPE_PROFESSION = 0x0008 + 0x0010 + 0x0020 + 0x0040 + 0x0080 + 0x0200 + 0x0400 
+local BAGTYPE_PROFESSION = 0x0008 + 0x0010 + 0x0020 + 0x0040 + 0x0080 + 0x0200 + 0x0400
 
 function BagSlotInfo:IsTradeBag(player, bagSlot)
 	return bit.band(self:GetBagType(player, bagSlot), BAGTYPE_PROFESSION) > 0
@@ -156,14 +164,14 @@ function BagSlotInfo:ToInventorySlot(bagSlot)
 	if self:IsKeyRing(bagSlot) then
 		return KeyRingButtonIDToInvSlotID(bagSlot)
 	end
-	
+
 	if self:IsBackpackBag(bagSlot) then
 		return ContainerIDToInventoryID(bagSlot)
 	end
-	
+
 	if self:IsBankBag(bagSlot) then
 		return BankButtonIDToInvSlotID(bagSlot, 1)
 	end
-	
+
 	return nil
 end

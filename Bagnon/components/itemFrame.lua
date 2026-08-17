@@ -8,8 +8,8 @@ local ItemFrame = Bagnon.Classy:New('Frame')
 ItemFrame:Hide()
 Bagnon.ItemFrame = ItemFrame
 
-local function hasBlizzQuestHighlight() 
-	return GetContainerItemQuestInfo and true or false 
+local function hasBlizzQuestHighlight()
+	return GetContainerItemQuestInfo and true or false
 end
 
 
@@ -127,6 +127,10 @@ function ItemFrame:ITEM_FRAME_BAG_BREAK_UPDATE(msg, frameID, enable)
 	end
 end
 
+function ItemFrame:REAGENTBANK_PURCHASED(msg, frameID, enable)
+	self:UpdateEverything()
+end
+
 function ItemFrame:UNIT_QUEST_LOG_CHANGED(event, unit)
 	if unit == 'player' then
 		self:HandleGlobalItemEvent(event)
@@ -200,7 +204,7 @@ function ItemFrame:UpdateEvents()
 		--live item events
 		if not self:IsCached() then
 			self:RegisterEvent('ITEM_LOCK_CHANGED')
-			
+
 			if hasBlizzQuestHighlight() then
 				self:RegisterEvent('QUEST_ACCEPTED')
 				self:RegisterEvent('UNIT_QUEST_LOG_CHANGED')
@@ -215,6 +219,7 @@ function ItemFrame:UpdateEvents()
 			if self:HasBankBags() then
 				self:RegisterItemEvent('BANK_OPENED')
 				self:RegisterItemEvent('BANK_CLOSED')
+				self:RegisterCustomEvent('REAGENTBANK_PURCHASED')
 			end
 		end
 

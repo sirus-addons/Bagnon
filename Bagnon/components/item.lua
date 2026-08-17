@@ -10,8 +10,8 @@ Bagnon.ItemSlot = ItemSlot
 
 local ItemSearch = LibStub('LibItemSearch-1.0')
 
-local function hasBlizzQuestHighlight() 
-	return GetContainerItemQuestInfo and true or false 
+local function hasBlizzQuestHighlight()
+	return GetContainerItemQuestInfo and true or false
 end
 
 --[[
@@ -64,6 +64,7 @@ function ItemSlot:Create()
 	item:SetScript('OnLeave', item.OnLeave)
 	item:SetScript('OnShow', item.OnShow)
 	item:SetScript('OnHide', item.OnHide)
+	item:SetScript('PreClick', item.OnPreClick)
 	item:SetScript('PostClick', item.PostClick)
 	item.UpdateTooltip = nil
 
@@ -211,6 +212,14 @@ function ItemSlot:OnDragStart()
 	end
 end
 
+function ItemSlot:OnPreClick(button)
+	if button == 'RightButton' then
+		if Bagnon.BagEvents.atBank and IsReagentBankUnlocked() then
+			return UseContainerItem(self:GetBag(), self:GetID(), nil, true)
+		end
+	end
+end
+
 function ItemSlot:OnModifiedClick(button)
 	local link = self:IsCached() and self:GetItem()
 	if link then
@@ -234,6 +243,7 @@ function ItemSlot:OnEnter()
 				GameTooltip:SetInventoryItem('player', BankButtonIDToInvSlotID(self:GetID()))
 				GameTooltip:Show()
 				CursorUpdate(self)
+				self:UpdateBorder()
 			end
 		else
 			ContainerFrameItemButton_OnEnter(self)

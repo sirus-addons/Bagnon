@@ -63,6 +63,7 @@ function Frame:UpdateEvents()
 		self:RegisterMessage('DATABROKER_FRAME_ENABLE_UPDATE')
 		self:RegisterMessage('SEARCH_TOGGLE_ENABLE_UPDATE')
 		self:RegisterMessage('OPTIONS_TOGGLE_ENABLE_UPDATE')
+		self:RegisterMessage('SORT_ENABLE_UPDATE')
 
 		self:RegisterMessage('CONTAINER_ITEM_EXPIRATION_UPDATE')
 	end
@@ -172,6 +173,12 @@ function Frame:SEARCH_TOGGLE_ENABLE_UPDATE(msg, frameID, enable)
 end
 
 function Frame:OPTIONS_TOGGLE_ENABLE_UPDATE(msg, frameID, enable)
+	if self:GetFrameID() == frameID then
+		self:Layout()
+	end
+end
+
+function Frame:SORT_ENABLE_UPDATE(msg, frameID, enable)
 	if self:GetFrameID() == frameID then
 		self:Layout()
 	end
@@ -494,11 +501,8 @@ function Frame:PlaceMenuButtons()
 		tinsert(menuButtons, selector)
 	end
 
-	if self:HasBagFrame() and self:HasBagToggle() then
-		local toggle = self:GetBagToggle() or self:CreateBagToggle()
-		tinsert(menuButtons, toggle)
-	end
-	
+	self:GetSpecificButtons(menuButtons)
+
 	-- guild bank support
 	if self:HasLogs() then
 		for i, toggle in ipairs(self:GetLogToggles()) do
@@ -507,8 +511,7 @@ function Frame:PlaceMenuButtons()
 	end
 
 	if self:HasSearchToggle() then
-		local toggle = self:GetSearchToggle() or self:CreateSearchToggle()
-		tinsert(menuButtons, toggle)
+		tinsert(menuButtons, self:GetSearchToggle() or self:CreateSearchToggle())
 	end
 
 	for i, button in ipairs(menuButtons) do
@@ -616,6 +619,21 @@ function Frame:HasSearchToggle()
 	return self:GetSettings():HasSearchToggle()
 end
 
+--[[ specific buttons ]]--
+
+function Frame:GetSpecificButtons(list)
+	if self:HasBagFrame() then
+		tinsert(list, self.bagToggle or self:CreateBagToggle())
+	end
+
+	if self:HasSortButton() then
+		tinsert(list, self.sortButton or self:CreateSortButton())
+	end
+end
+
+function Frame:CreateSpecialButtons()
+	return {Bagnon.SortButton:New(self)}
+end
 
 --[[ bag frame ]]--
 
@@ -631,6 +649,10 @@ end
 
 function Frame:HasBagFrame()
 	return self:GetSettings():HasBagFrame()
+end
+
+function Frame:HasSortButton()
+	return self:GetSettings():HasSortButton()
 end
 
 function Frame:IsBagFrameShown()
@@ -676,15 +698,11 @@ function Frame:CreateBagToggle()
 	return toggle
 end
 
-function Frame:GetBagToggle()
-	return self.bagToggle
+function Frame:CreateSortButton()
+	local button = Bagnon.SortButton:New(self)
+	self.sortButton = button
+	return button
 end
-
---this exists purely so that it can be overridden by guildBank
-function Frame:HasBagToggle()
-	return true
-end
-
 
 --[[ title frame ]]--
 

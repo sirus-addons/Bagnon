@@ -27,7 +27,7 @@
 	BANK_CLOSED
 	args:		none
 		called when the bank is closed and all of the bagnon events have SendMessaged
-		
+
 	BAG_UPDATE_TYPE
 	args:	bag, type
 		called when the type of a bag changes (aka, what items you can put in it changes)
@@ -36,7 +36,7 @@
 
 local Bagnon = LibStub('AceAddon-3.0'):GetAddon('Bagnon')
 local BagEvents = Bagnon.Ears:New()
-Bagnon.BagEvents = BagEvents 
+Bagnon.BagEvents = BagEvents
 
 
 --[[ privates? ]]--
@@ -49,7 +49,13 @@ local function ToIndex(bag, slot)
 end
 
 local function GetBagSize(bag)
-	return (bag == KEYRING_CONTAINER and GetKeyRingSize()) or GetContainerNumSlots(bag)
+	if bag == KEYRING_CONTAINER then
+		return GetKeyRingSize()
+	end
+	if not Bagnon.BagSlotInfo:IsReagents(bag) or IsReagentBankUnlocked() then
+		return GetContainerNumSlots(bag)
+	end
+	return 0
 end
 
 
@@ -58,17 +64,21 @@ end
 function BagEvents:Load()
 	self.atBank = false
 	self.firstVisit = true
-	
+
 	self.frame = CreateFrame('Frame')
-	
+
 	self.RegisterEvent = function(self, event)
 		self.frame:RegisterEvent(event)
 	end
-	
+
+	self.RegisterCustomEvent = function(self, event)
+		self.frame:RegisterCustomEvent(event)
+	end
+
 	self.OnEvent = function(f, event, ...)
 		if self[event] then
 			self[event](self, event, ...)
-		end		
+		end
 	end
 
 	self.frame:SetScript('OnEvent', self.OnEvent)
@@ -197,6 +207,7 @@ function BagEvents:UpdateBagSizes()
 		end
 	end
 	self:UpdateBagSize(KEYRING_CONTAINER)
+	self:UpdateBagSize(REAGENTBANK_CONTAINER)
 end
 
 function BagEvents:UpdateBagTypes()
@@ -219,6 +230,7 @@ function BagEvents:PLAYER_LOGIN(...)
 	self:RegisterEvent('BAG_UPDATE')
 	self:RegisterEvent('BAG_UPDATE_COOLDOWN')
 	self:RegisterEvent('PLAYERBANKSLOTS_CHANGED')
+	self:RegisterCustomEvent('PLAYERREAGENTBANKSLOTS_CHANGED')
 	self:RegisterEvent('BANKFRAME_OPENED')
 	self:RegisterEvent('BANKFRAME_CLOSED')
 
@@ -241,6 +253,10 @@ function BagEvents:PLAYERBANKSLOTS_CHANGED(...)
 	self:UpdateItems(BANK_CONTAINER)
 end
 
+function BagEvents:PLAYERREAGENTBANKSLOTS_CHANGED()
+	self:UpdateItems(REAGENTBANK_CONTAINER)
+end
+
 function BagEvents:BANKFRAME_OPENED(...)
 	self.atBank = true
 
@@ -248,6 +264,7 @@ function BagEvents:BANKFRAME_OPENED(...)
 		self.firstVisit = nil
 
 		self:UpdateBagSize(BANK_CONTAINER)
+		self:UpdateBagSize(REAGENTBANK_CONTAINER)
 		self:UpdateBagTypes()
 		self:UpdateBagSizes()
 	end
@@ -262,7 +279,7 @@ end
 
 function BagEvents:BAG_UPDATE_COOLDOWN(...)
 	self:UpdateCooldowns(BACKPACK_CONTAINER)
-		
+
 	for bag = 1, NUM_BAG_SLOTS do
 		self:UpdateCooldowns(bag)
 	end
