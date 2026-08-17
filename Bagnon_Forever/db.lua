@@ -54,6 +54,9 @@ local function GetBagSize(bag)
 	if bag == 'e' then
 		return NUM_EQUIPMENT_SLOTS
 	end
+	if bag == REAGENTBANK_CONTAINER and not IsReagentBankUnlocked() then
+		return 0
+	end
 	return GetContainerNumSlots(bag)
 end
 
@@ -131,6 +134,8 @@ function BagnonDB:PLAYER_LOGIN()
 	self:RegisterEvent('PLAYERBANKSLOTS_CHANGED')
 	self:RegisterEvent('UNIT_INVENTORY_CHANGED')
 	self:RegisterEvent('PLAYERBANKBAGSLOTS_CHANGED')
+	self:RegisterCustomEvent('PLAYERREAGENTBANKSLOTS_CHANGED')
+	self:RegisterCustomEvent('REAGENTBANK_PURCHASED')
 end
 
 function BagnonDB:PLAYER_MONEY()
@@ -138,13 +143,23 @@ function BagnonDB:PLAYER_MONEY()
 end
 
 function BagnonDB:BAG_UPDATE(event, bag)
-	if not(bag == BANK_CONTAINER or bag > NUM_BAG_SLOTS) or self.atBank then
+	if bag == REAGENTBANK_CONTAINER then
+		self:UpdateReagentBank()
+	elseif not(bag == BANK_CONTAINER or bag > NUM_BAG_SLOTS) or self.atBank then
 		self:OnBagUpdate(bag)
 	end
 end
 
 function BagnonDB:PLAYERBANKSLOTS_CHANGED()
 	self:UpdateBag(BANK_CONTAINER)
+end
+
+function BagnonDB:PLAYERREAGENTBANKSLOTS_CHANGED()
+	self:UpdateReagentBank()
+end
+
+function BagnonDB:REAGENTBANK_PURCHASED()
+	self:UpdateReagentBank()
 end
 
 function BagnonDB:PLAYERBANKBAGSLOTS_CHANGED()
@@ -158,6 +173,7 @@ function BagnonDB:BANKFRAME_OPENED()
 	for i = 1, GetNumBankSlots() do
 		self:UpdateBag(i + 4)
 	end
+	self:UpdateReagentBank()
 end
 
 function BagnonDB:BANKFRAME_CLOSED()
@@ -413,6 +429,12 @@ function BagnonDB:UpdateBag(bag)
 	self:SaveBag(bag)
 	for slot = 1, GetBagSize(bag) do
 		self:SaveItem(bag, slot)
+	end
+end
+
+function BagnonDB:UpdateReagentBank()
+	if self.atBank then
+		self:UpdateBag(REAGENTBANK_CONTAINER)
 	end
 end
 

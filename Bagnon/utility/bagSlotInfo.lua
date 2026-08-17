@@ -45,7 +45,7 @@ function BagSlotInfo:IsCached(player, bagSlot)
 		return true
 	end
 
-	if self:IsBank(bagSlot) or self:IsBankBag(bagSlot) then
+	if self:IsBank(bagSlot) or self:IsBankBag(bagSlot) or self:IsReagents(bagSlot) then
 		return not Bagnon.PlayerInfo:AtBank()
 	end
 
@@ -86,6 +86,8 @@ function BagSlotInfo:GetSize(player, bagSlot)
 		end
 	elseif self:IsBank(bagSlot) then
 		size = NUM_BANKGENERIC_SLOTS
+	elseif self:IsReagents(bagSlot) then
+		size = IsReagentBankUnlocked() and GetContainerNumSlots(bagSlot) or 0
 	elseif self:IsKeyRing(bagSlot) then
 		size = GetKeyRingSize()
 	else

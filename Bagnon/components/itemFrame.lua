@@ -492,7 +492,7 @@ end
 
 function ItemFrame:HasBankBags()
 	for _, bag in self:GetVisibleBags() do
-		if Bagnon.BagSlotInfo:IsBank(bag) or Bagnon.BagSlotInfo:IsBankBag(bag) then
+		if Bagnon.BagSlotInfo:IsBank(bag) or Bagnon.BagSlotInfo:IsBankBag(bag) or Bagnon.BagSlotInfo:IsReagents(bag) then
 			return true
 		end
 	end

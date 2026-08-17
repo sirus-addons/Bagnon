@@ -237,10 +237,10 @@ function ItemSlot:OnEnter()
 	else
 		dummySlot:Hide()
 
-		if self:IsBank() then
+		if self:IsBank() or self:IsReagentBank() then
 			if self:GetItem() then
 				self:AnchorTooltip()
-				GameTooltip:SetInventoryItem('player', BankButtonIDToInvSlotID(self:GetID()))
+				GameTooltip:SetInventoryItem('player', self:GetInventorySlot())
 				GameTooltip:Show()
 				CursorUpdate(self)
 				self:UpdateBorder()
@@ -256,6 +256,14 @@ function ItemSlot:OnLeave()
 	ResetCursor()
 end
 
+
+function ItemSlot:GetInventorySlot()
+	if self:IsReagentBank() then
+		return ReagentBankButtonIDToInvSlotID(self:GetID())
+	else
+		return BankButtonIDToInvSlotID(self:GetID())
+	end
+end
 
 --[[ Update Methods ]]--
 
@@ -551,6 +559,10 @@ end
 function ItemSlot:IsBankSlot()
 	local bag = self:GetBag()
 	return Bagnon.BagSlotInfo:IsBank(bag) or Bagnon.BagSlotInfo:IsBankBag(bag)
+end
+
+function ItemSlot:IsReagentBank()
+	return Bagnon.BagSlotInfo:IsReagents(self:GetBag())
 end
 
 function ItemSlot:AtBank()

@@ -53,7 +53,7 @@ do
 					invCount = invCount + BagnonDB:GetItemCount(link, bag, player)
 				end
 
-				local bankCount = BagnonDB:GetItemCount(link, BANK_CONTAINER, player)
+				local bankCount = BagnonDB:GetItemCount(link, BANK_CONTAINER, player) + BagnonDB:GetItemCount(link, REAGENTBANK_CONTAINER, player)
 				for i = 1, NUM_BANKBAGSLOTS do
 					bankCount = bankCount + BagnonDB:GetItemCount(link, NUM_BAG_SLOTS + i, player)
 				end
@@ -76,7 +76,7 @@ local function AddOwners(frame, link)
 				invCount = invCount + BagnonDB:GetItemCount(link, bag, player)
 			end
 
-			local bankCount = BagnonDB:GetItemCount(link, BANK_CONTAINER, player)
+			local bankCount = BagnonDB:GetItemCount(link, BANK_CONTAINER, player) + BagnonDB:GetItemCount(link, REAGENTBANK_CONTAINER, player)
 			for i = 1, NUM_BANKBAGSLOTS do
 				bankCount = bankCount + BagnonDB:GetItemCount(link, NUM_BAG_SLOTS + i, player)
 			end

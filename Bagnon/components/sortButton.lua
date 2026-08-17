@@ -68,7 +68,7 @@ function SortButton:OnEnter()
 	local frameID = self:GetParent().frameID
 	if frameID == 'bank' then
 		GameTooltip:SetOwner(self, self:GetRight() > (GetScreenWidth() / 2) and 'ANCHOR_LEFT' or 'ANCHOR_RIGHT')
-		GameTooltip:SetText(L.TipManageBank)
+	--	GameTooltip:SetText(L.TipManageBank)
 		GameTooltip:AddLine(L.TipDepositReagents, 1,1,1)
 		GameTooltip:Show()
 	end
