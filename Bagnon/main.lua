@@ -152,82 +152,134 @@ end
 --]]
 
 function Bagnon:HookBagClickEvents()
+	self:HideBlizzardBagFrames()
+
+	local pending
+	local updater = CreateFrame('Frame')
+	updater:Hide()
+	updater:SetScript('OnUpdate', function(f)
+		f:Hide()
+		local action = pending
+		pending = nil
+		action()
+	end)
+
+	local function hook(name, action)
+		hooksecurefunc(name, function(arg1, arg2)
+			pending = function() action(arg1, arg2) end
+			updater:Show()
+		end)
+	end
+
 	--backpack
-	hooksecurefunc('CloseBackpack', function()
+	hook('CloseBackpack', function()
 		self:HideFrame('inventory')
 	end)
 
-	local oOpenBackpack = OpenBackpack
-	OpenBackpack = function()
-		local shown = self:FrameControlsBag('inventory', BACKPACK_CONTAINER) and self:ShowFrame('inventory')
-
-		if not shown then
-			oOpenBackpack()
+	hook('OpenBackpack', function()
+		if self:FrameControlsBag('inventory', BACKPACK_CONTAINER) then
+			self:ShowFrame('inventory')
 		end
-	end
+	end)
 
-	local oToggleBackpack = ToggleBackpack
-	ToggleBackpack = function()
-		local toggled = self:FrameControlsBag('inventory', BACKPACK_CONTAINER) and self:ToggleFrame('inventory')
-
-		if not toggled then
-			oToggleBackpack()
+	hook('ToggleBackpack', function()
+		if self:FrameControlsBag('inventory', BACKPACK_CONTAINER) then
+			self:ToggleFrame('inventory')
 		end
-	end
+	end)
 
 	--single bag
-	local oToggleBag = ToggleBag
-	ToggleBag = function(bagSlot)
-		local frameID = self.BagSlotInfo:IsBankBag(bagSlot) and 'bank' or 'inventory'
-		local toggled = self:FrameControlsBag(frameID, bagSlot) and self:ToggleFrame(frameID)
-
-		if not toggled then
-			oToggleBag(bagSlot)
+	hook('ToggleBag', function(bagSlot)
+		local frameID = self:GetBagFrameID(bagSlot)
+		if frameID then
+			self:ToggleFrame(frameID)
 		end
-	end
+	end)
+
+	hook('OpenBag', function(bagSlot)
+		local frameID = self:GetBagFrameID(bagSlot)
+		if frameID then
+			self:ShowFrame(frameID)
+		end
+	end)
 
 	--keyring
-	local oToggleKeyRing = ToggleKeyRing
-	ToggleKeyRing = function()
+	hook('ToggleKeyRing', function()
 		local toggled = self:FrameControlsBag('keys', KEYRING_CONTAINER) and self:ToggleFrame('keys')
 
-		if not toggled then
-			toggled = self:FrameControlsBag('inventory', KEYRING_CONTAINER) and self:ToggleFrame('inventory')
+		if not toggled and self:FrameControlsBag('inventory', KEYRING_CONTAINER) then
+			self:ToggleFrame('inventory')
 		end
-
-		if not toggled then
-			oToggleKeyRing()
-		end
-	end
+	end)
 
 	--all bags
 	--closing the game menu triggers this function, and can be done in combat
-	hooksecurefunc('CloseAllBags', function()
+	hook('CloseAllBags', function()
 		self:HideFrame('inventory')
 	end)
 
-	local oOpenAllBags = OpenAllBags
-	OpenAllBags = function(force)
-		local opened = false
-		if force then
-			opened = self:FrameControlsBag('inventory', BACKPACK_CONTAINER) and self:ShowFrame('inventory')
-		else
-			opened = self:FrameControlsBag('inventory', BACKPACK_CONTAINER) and self:ToggleFrame('inventory')
+	hook('OpenAllBags', function(frame, force)
+		if self:FrameControlsBag('inventory', BACKPACK_CONTAINER) then
+			if frame or force then
+				self:ShowFrame('inventory')
+			else
+				self:ToggleFrame('inventory')
+			end
 		end
+	end)
+end
 
-		if not opened then
-			oOpenAllBags(force)
+function Bagnon:HideBlizzardBagFrames()
+	local hiddenParent = CreateFrame('Frame', nil, UIParent)
+	hiddenParent:SetAllPoints()
+	hiddenParent:Hide()
+
+	local parents = {}
+	local function hide(frame)
+		if frame then
+			parents[frame] = frame:GetParent()
+			frame:SetParent(hiddenParent)
+			frame:HookScript('OnHide', function() frame:SetParent(hiddenParent) end)
 		end
 	end
-	
-	local openBag = OpenBag
-	OpenBag = function(bagSlot)
-		local frameID = self.BagSlotInfo:IsBankBag(bagSlot) and 'bank' or 'inventory'
-		local opened = self:FrameControlsBag(frameID, bagSlot) and self:ShowFrame(frameID)
 
-		if not opened then
-			openBag(bagSlot)
+	for i = 1, NUM_CONTAINER_FRAMES do
+		hide(_G['ContainerFrame' .. i])
+	end
+	hide(ContainerFrameCombinedBags)
+	hide(ContainerFrameCombinedBank)
+
+	hooksecurefunc('ContainerFrame_GenerateFrame', function(frame, size, bagSlot)
+		if frame == ContainerFrameCombinedBank then
+			bagSlot = BANK_CONTAINER
 		end
+		if parents[frame] and not self:GetBagFrameID(bagSlot) then
+			frame:SetParent(parents[frame])
+		end
+	end)
+
+	self.hiddenBlizzardBagFrames = hiddenParent
+end
+
+function Bagnon:CloseBlizzardBagFrames(frameID)
+	for _, frame in pairs({self.hiddenBlizzardBagFrames:GetChildren()}) do
+		local bagSlot = frame == ContainerFrameCombinedBank and BANK_CONTAINER or frame:GetID()
+		if frame:IsShown() and self:GetBagFrameID(bagSlot) == frameID then
+			frame:Hide()
+		end
+	end
+end
+
+function Bagnon:GetBagFrameID(bagSlot)
+	if bagSlot == KEYRING_CONTAINER then
+		if self:IsFrameEnabled('keys') and self:FrameControlsBag('keys', bagSlot) then
+			return 'keys'
+		end
+	end
+
+	local frameID = (self.BagSlotInfo:IsBank(bagSlot) or self.BagSlotInfo:IsBankBag(bagSlot)) and 'bank' or 'inventory'
+	if self:IsFrameEnabled(frameID) and self:FrameControlsBag(frameID, bagSlot) then
+		return frameID
 	end
 end
 
@@ -252,8 +304,10 @@ function Bagnon:RegisterAutoDisplayEvents()
 	self:RegisterEvent('GUILDBANKFRAME_CLOSED')
 
 	--override normal bank display
-	BankFrame:UnregisterEvent('BANKFRAME_OPENED')
-	BankFrame:UnregisterEvent('BANKFRAME_CLOSED')
+	if self:IsFrameEnabled('bank') then
+		BankFrame:UnregisterEvent('BANKFRAME_OPENED')
+		BankFrame:UnregisterEvent('BANKFRAME_CLOSED')
+	end
 	
 	local f = CreateFrame('Frame', nil, CharacterFrame)
 	f:SetScript('OnShow', function() Bagnon:PLAYER_FRAME_SHOW() end)
@@ -276,29 +330,17 @@ function Bagnon:AutoDisplayingFrameOnEvent(frameID, event)
 	return self.Settings:IsFrameShownAtEvent(frameID, event)
 end
 
-function Bagnon:ShowBlizzardBankFrame()
-	BankFrame_OnEvent(_G['BankFrame'], 'BANKFRAME_OPENED')
-end
-
-function Bagnon:HideBlizzardBankFrame()
-	BankFrame_OnEvent(_G['BankFrame'], 'BANKFRAME_CLOSED')
-end
-
 
 --[[ Display Events ]]--
 
 --visiting the bank
 function Bagnon:BANK_OPENED()
-	if not self:ShowFrame('bank') then
-		self:ShowBlizzardBankFrame()
-	end
+	self:ShowFrame('bank')
 	self:ShowFrameAtEvent('inventory', 'bank')
 end
 
 function Bagnon:BANK_CLOSED()
-	if not self:HideFrame('bank') then
-		self:HideBlizzardBankFrame()
-	end
+	self:HideFrame('bank')
 	self:HideFrameAtEvent('inventory', 'bank')
 end
 

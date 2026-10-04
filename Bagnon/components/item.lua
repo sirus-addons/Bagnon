@@ -40,7 +40,7 @@ end
 --constructs a brand new item slot
 function ItemSlot:Create()
 	local id = self:GetNextItemSlotID()
-	local item = self:Bind(self:GetBlizzardItemSlot(id) or self:ConstructNewItemSlot(id))
+	local item = self:Bind(self:ConstructNewItemSlot(id))
 	item:Hide()
 
 	--add a quality border texture
@@ -64,8 +64,6 @@ function ItemSlot:Create()
 	item:SetScript('OnLeave', item.OnLeave)
 	item:SetScript('OnShow', item.OnShow)
 	item:SetScript('OnHide', item.OnHide)
-	item:SetScript('OnClick', item.OnClick)
-	item:SetScript('PostClick', item.PostClick)
 	item.UpdateTooltip = nil
 
 	return item
@@ -74,28 +72,6 @@ end
 --creates a new item slot for <id>
 function ItemSlot:ConstructNewItemSlot(id)
 	return CreateFrame('Button', 'BagnonItemSlot' .. id, nil, 'ContainerFrameItemButtonTemplate')
-end
-
---returns an available blizzard item slot for <id>
-function ItemSlot:GetBlizzardItemSlot(id)
-	--only allow reuse of blizzard frames if all frames are enabled
-	if not self:CanReuseBlizzardBagSlots() then
-		return nil
-	end
-
-	local bag = math.ceil(id / MAX_CONTAINER_ITEMS)
-	local slot = (id-1) % MAX_CONTAINER_ITEMS + 1
-	local item = _G[format('ContainerFrame%dItem%d', bag, slot)]
-
-	if item then
-		item:SetID(0)
-		item:ClearAllPoints()
-		return item
-	end
-end
-
-function ItemSlot:CanReuseBlizzardBagSlots()
-	return Bagnon.Settings:AreAllFramesEnabled() and (not Bagnon.Settings:IsBlizzardBagPassThroughEnabled())
 end
 
 --returns the next available item slot
@@ -210,47 +186,6 @@ function ItemSlot:OnDragStart()
 	if self:IsCached() and CursorHasItemSlot() then
 		ClearCursor()
 	end
-end
-
-function ItemSlot:UseDefaultRightClick()
-	if MerchantFrame:IsShown() or (AuctionHouseFrame and AuctionHouseFrame:IsShown()) or (ItemUpgradeFrame and ItemUpgradeFrame:IsShown()) then
-		return true
-	end
-
-	local itemID = GetContainerItemID(self:GetBag(), self:GetID())
-	if itemID and ITEMS_ATTENTION_ON_USE and ITEMS_ATTENTION_ON_USE[itemID] then
-		return true
-	end
-	if CONTAINER_ATTENTION_ITEM_LINK and SpellCanTargetItem() and itemID then
-		return true
-	end
-end
-
-function ItemSlot:OnClick(button)
-	if ContainerFrameItemButton_CustomClickHandler(self, button) then
-		return
-	end
-
-	local modifiedClick = IsModifiedClick()
-	if button ~= 'LeftButton' and modifiedClick and IsModifiedClick('AUTOLOOTTOGGLE') then
-		local _, _, _, _, _, lootable = GetContainerItemInfo(self:GetBag(), self:GetID())
-		if lootable then
-			modifiedClick = false
-		end
-	end
-	if modifiedClick then
-		ContainerFrameItemButton_OnModifiedClick(self, button)
-		return
-	end
-
-	-- In the Sirus client the fourth argument sends the item to the reagent bank.
-	-- Bagnon keeps both banks visible, so a plain right-click uses the regular bank.
-	if button == 'RightButton' and not self:IsCached() and Bagnon.BagEvents.atBank and not self:UseDefaultRightClick() then
-		UseContainerItem(self:GetBag(), self:GetID(), nil, false)
-		return
-	end
-
-	ContainerFrameItemButton_OnClick(self, button)
 end
 
 function ItemSlot:OnModifiedClick(button)
