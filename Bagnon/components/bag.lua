@@ -198,6 +198,10 @@ function Bag:PLAYER_UPDATE(msg, frameID, player)
 	end
 end
 
+function Bag:REAGENTBANK_PURCHASED()
+	self:Update()
+end
+
 
 --[[ Frame Events ]]--
 
@@ -212,7 +216,7 @@ end
 function Bag:OnClick()
 	if self:IsPurchasable() and not self:IsCached() then
 		self:PurchaseSlot()
-	elseif CursorHasItem() and not self:IsCached() then
+	elseif CursorHasItem() and not self:IsCached() and not self:IsReagents() then
 		if self:IsBackpack() then
 			PutItemInBackpack()
 		elseif self:IsKeyRing() then
@@ -414,6 +418,9 @@ function Bag:IsSlotShown()
 end
 
 function Bag:CanToggleSlot()
+	if self:IsReagents() then
+		return self:IsCached() or IsReagentBankUnlocked()
+	end
 	return self:IsBank() or self:IsBackpack() or self:IsKeyRing() or (self:IsBagSlot() and self.hasItem)
 end
 

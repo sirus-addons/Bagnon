@@ -208,5 +208,6 @@ function MoneyFrame:AddPlayerTotalToTooltip(player, money, tooltip)
 		end
 	end
 
-	tooltip:AddDoubleLine(player, text, 1, 1, 1, 1, 1, 1, 0)
+	local color = RAID_CLASS_COLORS[BagnonDB:GetClass(player)] or HIGHLIGHT_FONT_COLOR
+	tooltip:AddDoubleLine(player, text, color.r, color.g, color.b, 1, 1, 1, 0)
 end

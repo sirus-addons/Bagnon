@@ -4,8 +4,29 @@
 --]]
 
 local Bagnon = LibStub('AceAddon-3.0'):GetAddon('Bagnon')
+local L = LibStub('AceLocale-3.0'):GetLocale('Bagnon-GuildBank')
 local GuildTab = Bagnon.Classy:New('CheckButton')
 Bagnon.GuildTab = GuildTab
+
+local blizzardGuildBankHooked
+
+local function EnsureGuildBankPopup()
+	if not GuildBankPopupFrame and not IsAddOnLoaded('Blizzard_GuildBankUI') then
+		LoadAddOn('Blizzard_GuildBankUI')
+	end
+	if not GuildBankPopupFrame then
+		return false
+	end
+	if GuildBankFrame and not blizzardGuildBankHooked then
+		blizzardGuildBankHooked = true
+		GuildBankPopupFrame:SetParent(UIParent)
+		GuildBankFrame:Hide()
+		hooksecurefunc(GuildBankFrame, 'Show', function(self)
+			self:Hide()
+		end)
+	end
+	return true
+end
 
 --constants
 local SIZE = 32
@@ -127,18 +148,40 @@ function GuildTab:OnHide()
 	self:UpdateEvents()
 end
 
-function GuildTab:OnClick()
+function GuildTab:OnClick(button)
 	local tab = self:GetID()
+	local numTabs = GetNumGuildBankTabs()
 	local viewable = select(3, GetGuildBankTabInfo(tab))
+
+	if button == 'RightButton' then
+		if viewable and CanEditGuildTabInfo(tab) and EnsureGuildBankPopup() then
+			SetCurrentGuildBankTab(tab)
+			QueryGuildBankTab(tab)
+			self:SendMessage('GUILD_BANK_TAB_CHANGE', tab)
+			GuildBankPopupFrame:Show()
+			if GuildBankPopupFrame_Update then
+				GuildBankPopupFrame_Update(tab)
+			end
+		else
+			self:SetChecked(false)
+		end
+		return
+	end
+
+	if tab == numTabs + 1 and button == 'LeftButton' and IsGuildLeader() then
+		StaticPopup_Show('CONFIRM_BUY_GUILDBANK_TAB')
+		self:SetChecked(false)
+		return
+	end
 
 	if viewable then
 		SetCurrentGuildBankTab(tab)
 		QueryGuildBankTab(tab)
-	
+
 		self:SendMessage('GUILD_BANK_TAB_CHANGE', tab)
 	else
 		self:SetChecked(false)
-end
+	end
 end
 
 function GuildTab:OnEnter()
@@ -241,6 +284,14 @@ function GuildTab:UpdateTooltip()
 		end
 
 		GameTooltip:AddLine(access)
+		if CanEditGuildTabInfo(self:GetID()) then
+			GameTooltip:AddLine(L.TipEditTab)
+		end
+	elseif IsGuildLeader() and self:GetID() == GetNumGuildBankTabs() + 1 then
+		GameTooltip:SetText(GUILDBANK_TAB_NUMBER:format(self:GetID()))
+		GameTooltip:AddLine(BANK_BAG_PURCHASE)
+		GameTooltip:AddLine(L.TipPurchaseTab)
+		SetTooltipMoney(GameTooltip, GetGuildBankTabCost())
 	else
 		GameTooltip:SetText('Unavailable')
 	end

@@ -121,6 +121,7 @@ end
 --[[  Events ]]--
 
 function BagnonDB:PLAYER_LOGIN()
+	self.pdb.class = select(2, UnitClass('player'))
 	self:SaveMoney()
 	self:UpdateBag(BACKPACK_CONTAINER)
 	self:UpdateBag(KEYRING_CONTAINER)
@@ -240,6 +241,13 @@ function BagnonDB:GetMoney(player)
 		return playerData.g or 0
 	end
 	return 0
+end
+
+function BagnonDB:GetClass(player)
+	local playerData = self.rdb[player]
+	if playerData then
+		return playerData.class
+	end
 end
 
 

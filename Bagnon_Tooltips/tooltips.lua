@@ -89,7 +89,12 @@ local function AddOwners(frame, link)
 		end
 
 		if infoString and infoString ~= '' then
-			frame:AddDoubleLine(format(TEAL, player), infoString)
+			local color = RAID_CLASS_COLORS[BagnonDB:GetClass(player)]
+			if color then
+				frame:AddDoubleLine(player, infoString, color.r, color.g, color.b)
+			else
+				frame:AddDoubleLine(format(TEAL, player), infoString)
+			end
 		end
 	end
 	frame:Show()

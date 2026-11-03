@@ -11,6 +11,8 @@ L.TipFunds = 'Guild Funds'
 L.TipDeposit = '<Left Click> to deposit.'
 L.TipWithdrawRemaining = '<Right Click> to withdraw (%s remaining).'
 L.TipWithdraw = '<Right Click> to withdraw (no remaining).'
+L.TipPurchaseTab = '<Left Click> to purchase this tab.'
+L.TipEditTab = '<Right Click> to change the name and icon.'
 
 
 -- Automatically localized - do not translate!

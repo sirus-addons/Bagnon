@@ -40,8 +40,8 @@ function PlayerSelector:New(frameID, parent)
 
 	local icon = b:CreateTexture()
 	icon:SetAllPoints(b)
-	icon:SetTexture(self:GetPlayerIcon())
 	b.icon = icon
+	b:UpdateIcon()
 
 	b:SetScript('OnClick', b.OnClick)
 	b:SetScript('OnEnter', b.OnEnter)
@@ -56,7 +56,7 @@ end
 --[[ Frame Events ]]--
 
 function PlayerSelector:OnShow()
-	self.icon:SetTexture(self:GetPlayerIcon())
+	self:UpdateIcon()
 end
 
 function PlayerSelector:OnClick()
@@ -90,6 +90,12 @@ end
 
 function PlayerSelector:UpdateTooltip()
 	GameTooltip:SetText(L.TipChangePlayer)
+end
+
+function PlayerSelector:UpdateIcon()
+	if not self.icon:SetTexture(self:GetPlayerIcon()) then
+		SetPortraitTexture(self.icon, 'player')
+	end
 end
 
 

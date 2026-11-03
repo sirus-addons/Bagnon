@@ -68,7 +68,8 @@ local function CharSelect_Initialize(self, level)
 		local current = UnitName('player')
 
 		for i,player in ipairs(playerList) do
-			AddCheckItem(player, i, CharSelect_OnClick, player == selected, player ~= current, level, player)
+			local color = RAID_CLASS_COLORS[BagnonDB:GetClass(player)]
+			AddCheckItem(color and ('|c' .. color.colorStr .. player .. '|r') or player, i, CharSelect_OnClick, player == selected, player ~= current, level, player)
 		end
 	elseif level == 2 then
 		AddItem(REMOVE, nil, CharSelect_OnClick, level, playerList[UIDROPDOWNMENU_MENU_VALUE], true)

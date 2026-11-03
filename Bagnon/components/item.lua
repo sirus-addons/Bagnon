@@ -40,7 +40,7 @@ end
 --constructs a brand new item slot
 function ItemSlot:Create()
 	local id = self:GetNextItemSlotID()
-	local item = self:Bind(self:GetBlizzardItemSlot(id) or self:ConstructNewItemSlot(id))
+	local item = self:Bind(self:ConstructNewItemSlot(id))
 	item:Hide()
 
 	--add a quality border texture
@@ -64,8 +64,6 @@ function ItemSlot:Create()
 	item:SetScript('OnLeave', item.OnLeave)
 	item:SetScript('OnShow', item.OnShow)
 	item:SetScript('OnHide', item.OnHide)
-	item:SetScript('PreClick', item.OnPreClick)
-	item:SetScript('PostClick', item.PostClick)
 	item.UpdateTooltip = nil
 
 	return item
@@ -74,28 +72,6 @@ end
 --creates a new item slot for <id>
 function ItemSlot:ConstructNewItemSlot(id)
 	return CreateFrame('Button', 'BagnonItemSlot' .. id, nil, 'ContainerFrameItemButtonTemplate')
-end
-
---returns an available blizzard item slot for <id>
-function ItemSlot:GetBlizzardItemSlot(id)
-	--only allow reuse of blizzard frames if all frames are enabled
-	if not self:CanReuseBlizzardBagSlots() then
-		return nil
-	end
-
-	local bag = math.ceil(id / MAX_CONTAINER_ITEMS)
-	local slot = (id-1) % MAX_CONTAINER_ITEMS + 1
-	local item = _G[format('ContainerFrame%dItem%d', bag, slot)]
-
-	if item then
-		item:SetID(0)
-		item:ClearAllPoints()
-		return item
-	end
-end
-
-function ItemSlot:CanReuseBlizzardBagSlots()
-	return Bagnon.Settings:AreAllFramesEnabled() and (not Bagnon.Settings:IsBlizzardBagPassThroughEnabled())
 end
 
 --returns the next available item slot
@@ -209,14 +185,6 @@ end
 function ItemSlot:OnDragStart()
 	if self:IsCached() and CursorHasItemSlot() then
 		ClearCursor()
-	end
-end
-
-function ItemSlot:OnPreClick(button)
-	if button == 'RightButton' then
-		if Bagnon.BagEvents.atBank and IsReagentBankUnlocked() then
-			return UseContainerItem(self:GetBag(), self:GetID(), nil, true)
-		end
 	end
 end
 

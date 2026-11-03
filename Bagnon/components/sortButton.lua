@@ -70,6 +70,7 @@ function SortButton:OnEnter()
 		GameTooltip:SetOwner(self, self:GetRight() > (GetScreenWidth() / 2) and 'ANCHOR_LEFT' or 'ANCHOR_RIGHT')
 	--	GameTooltip:SetText(L.TipManageBank)
 		GameTooltip:AddLine(L.TipDepositReagents, 1,1,1)
+		GameTooltip:AddLine(L.TipSortReagents, 1,1,1)
 		GameTooltip:Show()
 	end
 end

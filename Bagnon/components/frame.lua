@@ -211,6 +211,7 @@ function Frame:OnHide()
 	if self:IsBankFrame() then
 		self:CloseBankFrame()
 	end
+	Bagnon:CloseBlizzardBagFrames(self:GetFrameID())
 
 	self:UpdateEvents()
 
