@@ -64,6 +64,7 @@ function ItemSlot:Create()
 	item:SetScript('OnLeave', item.OnLeave)
 	item:SetScript('OnShow', item.OnShow)
 	item:SetScript('OnHide', item.OnHide)
+	item:SetScript('PreClick', item.OnPreClick)
 	item.UpdateTooltip = nil
 
 	return item
@@ -185,6 +186,36 @@ end
 function ItemSlot:OnDragStart()
 	if self:IsCached() and CursorHasItemSlot() then
 		ClearCursor()
+	end
+end
+
+local reagentStore = CreateFrame('Frame')
+reagentStore.refused = {}
+reagentStore:RegisterEvent('UI_ERROR_MESSAGE')
+reagentStore:SetScript('OnEvent', function(self, event, msg)
+	local pending = self.pending
+	if pending and msg == ERR_REAGENT_BANK_WRONG_ITEM and GetTime() - pending.time < 5 then
+		self.pending = nil
+		self.refused[pending.itemID] = true
+		if Bagnon.PlayerInfo:AtBank() and GetContainerItemID(pending.bag, pending.slot) == pending.itemID then
+			UseContainerItem(pending.bag, pending.slot)
+		end
+	end
+end)
+
+function ItemSlot:OnPreClick(button)
+	if button ~= 'RightButton' or IsModifiedClick() or self:IsCached() or self:IsBankSlot() or self:IsReagentBank() then
+		return
+	end
+	if not (self:AtBank() and IsReagentBankUnlocked()) or BankFrame:IsShown() or MerchantFrame:IsShown() or (AuctionHouseFrame and AuctionHouseFrame:IsShown()) or (ItemUpgradeFrame and ItemUpgradeFrame:IsShown()) then
+		return
+	end
+
+	local bag, slot = self:GetBag(), self:GetID()
+	local itemID = GetContainerItemID(bag, slot)
+	if itemID and IsReagentItem(itemID) and not reagentStore.refused[itemID] then
+		reagentStore.pending = {bag = bag, slot = slot, itemID = itemID, time = GetTime()}
+		UseContainerItem(bag, slot, nil, true)
 	end
 end
 
