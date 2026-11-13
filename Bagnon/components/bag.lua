@@ -119,8 +119,8 @@ function Bag:UpdateEvents()
 				self:RegisterEvent('ITEM_LOCK_CHANGED')
 				self:RegisterEvent('CURSOR_UPDATE')
 				self:RegisterEvent('BAG_UPDATE')
-				self:RegisterEvent('PLAYERBANKSLOTS_UPDATED')
-				self:RegisterEvent('PLAYERBANKBAGSLOTS_UPDATED')
+				self:RegisterEvent('PLAYERBANKSLOTS_CHANGED')
+				self:RegisterEvent('PLAYERBANKBAGSLOTS_CHANGED')
 			end
 		end
 
@@ -160,24 +160,22 @@ function Bag:BAG_UPDATE(event, bag)
 	self:UpdateCustomIcon()
 end
 
-function Bag:PLAYERBANKSLOTS_UPDATED(event)
+function Bag:PLAYERBANKSLOTS_CHANGED(event)
 	self:UpdateLock()
 	self:UpdateCustomIcon()
 end
 
-function Bag:PLAYERBANKBAGSLOTS_UPDATED(event)
+function Bag:PLAYERBANKBAGSLOTS_CHANGED(event)
 	self:UpdateLock()
 	self:UpdateCustomIcon()
 end
 
 function Bag:BANK_OPENED(msg)
-	self:UpdateLock()
-	self:UpdateCustomIcon()
+	self:UpdateEverything()
 end
 
 function Bag:BANK_CLOSED(msg)
-	self:UpdateLock()
-	self:UpdateCustomIcon()
+	self:UpdateEverything()
 end
 
 function Bag:BAG_SLOT_SHOW(msg, frameID, slotID)
@@ -315,6 +313,8 @@ function Bag:Update()
 		return
 	end
 
+	self:UpdateLock()
+
 	if self:IsBackpack() or self:IsBank() then
 		self:SetIcon('Interface/Buttons/Button-Backpack-Up')
 	elseif self:IsReagents() then
@@ -323,7 +323,6 @@ function Bag:Update()
 		self:UpdateCustomIcon()
 	end
 
-	self:UpdateLock()
 	self:UpdateCursor()
 	self:UpdateShown()
 end
@@ -351,6 +350,7 @@ function Bag:UpdateCustomIcon()
 
 		self:SetCount(count)
 		self.hasItem = link
+		self:UpdateShown()
 	end
 end
 

@@ -203,6 +203,7 @@ function Frame:OnShow()
 
 	self:UpdateEvents()
 	self:UpdateLook()
+	Bagnon:UpdateBlizzardBagButtons()
 end
 
 function Frame:OnHide()
@@ -219,6 +220,7 @@ function Frame:OnHide()
 	if self:IsFrameShown() then
 		self:HideFrame()
 	end
+	Bagnon:UpdateBlizzardBagButtons()
 end
 
 function Frame:CloseBankFrame()

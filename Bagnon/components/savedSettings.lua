@@ -66,6 +66,7 @@ function SavedSettings:GetDefaultSettings()
 		highlightItemsByQuality = true,
 		highlightQuestItems = true,
 		showEmptyItemSlotTexture = true,
+		showItemLevel = false,
 		lockFramePositions = false,
 		colorBagSlots = true,
 		
