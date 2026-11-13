@@ -1,9 +1,9 @@
 ## Interface: 30300
 ## Title: Bagnon Tooltips
 ## Author: Tuller
-## Notes: |@Version: 13@|Tooltips for telling who has what
-## Notes-zhCN: |@Version: 13@|物品提示上显示同帐号下其他角色银行/背包黑该物品情况
-## Notes-zhTW: |@Version: 13@|物品提示上顯示同帳號下其他角色銀行/背包黑該物品情況
+## Notes: |@Version: 14@|Tooltips for telling who has what
+## Notes-zhCN: |@Version: 14@|物品提示上显示同帐号下其他角色银行/背包黑该物品情况
+## Notes-zhTW: |@Version: 14@|物品提示上顯示同帳號下其他角色銀行/背包黑該物品情況
 ## RequiredDeps: Bagnon_Forever
 localization\localization.lua
 localization\localization.tw.lua

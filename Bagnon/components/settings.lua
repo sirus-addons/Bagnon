@@ -81,6 +81,17 @@ function Settings:ShowingEmptyItemSlotTextures()
 	return self:GetDB().showEmptyItemSlotTexture
 end
 
+function Settings:SetShowItemLevel(enable)
+	if self:ShowingItemLevel() ~= enable then
+		self:GetDB().showItemLevel = enable
+		self:SendMessage('SHOW_ITEM_LEVEL_UPDATE', enable)
+	end
+end
+
+function Settings:ShowingItemLevel()
+	return self:GetDB().showItemLevel
+end
+
 
 --lock frame positions
 function Settings:SetLockFramePositions(enable)
