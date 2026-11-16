@@ -7,3 +7,12 @@
 
 Настройка:\
 ESC -> Интерфейс -> Модификации -> Bagnon - окно настройки.
+
+**Скриншоты:**
+
+![](https://raw.githubusercontent.com/sirus-addons/Bagnon/master/.screenshots/1.webp)
+![](https://raw.githubusercontent.com/sirus-addons/Bagnon/master/.screenshots/2.webp)
+![](https://raw.githubusercontent.com/sirus-addons/Bagnon/master/.screenshots/3.webp)
+![](https://raw.githubusercontent.com/sirus-addons/Bagnon/master/.screenshots/4.webp)
+![](https://raw.githubusercontent.com/sirus-addons/Bagnon/master/.screenshots/5.webp)
+![](https://raw.githubusercontent.com/sirus-addons/Bagnon/master/.screenshots/6.webp)
