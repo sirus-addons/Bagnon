@@ -149,6 +149,10 @@ function ItemSlot:SHOW_EMPTY_ITEM_SLOT_TEXTURE_UPDATE(msg, enable)
 	self:Update()
 end
 
+function ItemSlot:SHOW_ITEM_LEVEL_UPDATE(msg, enable)
+	self:UpdateItemLevel()
+end
+
 function ItemSlot:ITEM_SLOT_COLOR_ENABLED_UPDATE(msg, type, r, g, b)
 	self:Update()
 end
@@ -279,6 +283,7 @@ function ItemSlot:Update()
 	self:SetLocked(locked)
 	self:SetReadable(readable)
 	self:SetBorderQuality(quality)
+	self:UpdateItemLevel()
 	self:UpdateCooldown()
 	self:UpdateSlotColor()
 	self:UpdateSearch()
@@ -446,6 +451,32 @@ end
 function ItemSlot:UpdateBorder()
 	local texture, count, locked, quality = self:GetItemSlotInfo()
 	self:SetBorderQuality(quality)
+end
+
+function ItemSlot:UpdateItemLevel()
+	local text = self.itemLevel
+	local link = Bagnon.Settings:ShowingItemLevel() and self:GetItem()
+
+	if link then
+		local _, _, quality, level, _, _, _, _, _, _, _, _, classID = GetItemInfoEx(link)
+		if level and (classID == LE_ITEM_CLASS_WEAPON or classID == LE_ITEM_CLASS_ARMOR) then
+			if not text then
+				text = self:CreateFontString(nil, 'OVERLAY', 'NumberFontNormal')
+				text:SetPoint('TOPLEFT', 2, -2)
+				self.itemLevel = text
+			end
+
+			local r, g, b = GetItemQualityColor(quality)
+			text:SetTextColor(r, g, b)
+			text:SetText(level)
+			text:Show()
+			return
+		end
+	end
+
+	if text then
+		text:Hide()
+	end
 end
 
 --cooldown

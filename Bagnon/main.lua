@@ -227,6 +227,9 @@ function Bagnon:HookBagClickEvents()
 			end
 		end
 	end)
+
+	hooksecurefunc('BackpackButton_UpdateChecked', function() self:UpdateBlizzardBagButtons() end)
+	hooksecurefunc('BagSlotButton_UpdateChecked', function() self:UpdateBlizzardBagButtons() end)
 end
 
 function Bagnon:HideBlizzardBagFrames()
@@ -266,6 +269,18 @@ function Bagnon:CloseBlizzardBagFrames(frameID)
 		local bagSlot = frame == ContainerFrameCombinedBank and BANK_CONTAINER or frame:GetID()
 		if frame:IsShown() and self:GetBagFrameID(bagSlot) == frameID then
 			frame:Hide()
+		end
+	end
+end
+
+function Bagnon:UpdateBlizzardBagButtons()
+	local frame = self:GetFrame('inventory')
+	local shown = frame and frame:IsVisible()
+
+	for bagSlot = BACKPACK_CONTAINER, NUM_BAG_SLOTS do
+		if self:GetBagFrameID(bagSlot) == 'inventory' then
+			local button = bagSlot == BACKPACK_CONTAINER and MainMenuBarBackpackButton or _G['CharacterBag' .. (bagSlot - 1) .. 'Slot']
+			button:SetChecked(shown)
 		end
 	end
 end

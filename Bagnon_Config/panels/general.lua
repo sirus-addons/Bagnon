@@ -95,8 +95,11 @@ function GeneralOptions:AddWidgets()
 	local showEmptyItemSlotTextures = self:CreateEmptyItemSlotTextureCheckbox()
 	showEmptyItemSlotTextures:SetPoint('TOPLEFT', lockFramePositions, 'BOTTOMLEFT', 0, -SPACING)
 	
+	local showItemLevel = self:CreateItemLevelCheckbox()
+	showItemLevel:SetPoint('TOPLEFT', showEmptyItemSlotTextures, 'BOTTOMLEFT', 0, -SPACING)
+	
 	local enableBlizzardBagPassThrough = self:CreateBlizzardBagPassThroughCheckbox()
-	enableBlizzardBagPassThrough:SetPoint('TOPLEFT', showEmptyItemSlotTextures, 'BOTTOMLEFT', 0, -SPACING)
+	enableBlizzardBagPassThrough:SetPoint('TOPLEFT', showItemLevel, 'BOTTOMLEFT', 0, -SPACING)
 end
 
 function GeneralOptions:UpdateWidgets()
@@ -172,6 +175,20 @@ end
 
 function GeneralOptions:GetEmptyItemSlotTextureCheckbox()
 	return self.showEmptyItemsTextureCheckbox
+end
+
+function GeneralOptions:CreateItemLevelCheckbox()
+	local button = Bagnon.OptionsCheckButton:New(L.ShowItemLevel, self)
+
+	button.OnEnableSetting = function(self, enable)
+		Bagnon.Settings:SetShowItemLevel(enable)
+	end
+
+	button.IsSettingEnabled = function(self)
+		return Bagnon.Settings:ShowingItemLevel()
+	end
+
+	return button
 end
 
 
